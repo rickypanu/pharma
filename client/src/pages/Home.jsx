@@ -19,7 +19,7 @@ function useTerritories(numReps, strategy) {
       setLoading(true);
       setError(null);
       try {
-        const response = await getOptimizedTerritories(numReps, strategy);
+        const response = await fetchTerritories(numReps, strategy);
 
         if (response.data.error) {
           setError(response.data.error);

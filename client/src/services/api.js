@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://pharma-analytic.onrender.com";
+const API_BASE_URL = "https://pharma-analytic.onrender.com/api";
 
 // Create a reusable axios instance
 const api = axios.create({
