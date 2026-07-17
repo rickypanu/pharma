@@ -15,32 +15,28 @@ function useTerritories(numReps, strategy) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetchTerritories(numReps, strategy);
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // 1. fetchTerritories returns { hcps, metrics } directly, NOT the raw Axios response
+      const result = await fetchTerritories(numReps, strategy);
 
-        if (response.data.error) {
-          setError(response.data.error);
-        } else {
-          setData({
-            hcps: response.data.data || [],
-            metrics: response.data.metrics || null,
-          });
-        }
-      } catch (err) {
-        setError(
-          "Could not connect to the FastAPI server. Ensure it is running on port 8000."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+      // 2. Map the unwrapped properties straight to your state
+      setData({
+        hcps: result.hcps,
+        metrics: result.metrics,
+      });
+    } catch (err) {
+      // 3. Capture the actual error thrown by your API service
+      setError(err.message || "Could not connect to the FastAPI server.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
-  }, [numReps, strategy]);
-
+  fetchData();
+}, [numReps, strategy]);
   return { ...data, loading, error };
 }
 
