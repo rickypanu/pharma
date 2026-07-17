@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "react-simple-maps";
+import {fetchTerritories} from '../service/api';
 
 const TERRITORY_COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD', '#D4A5A5', '#9B59B6', '#3498DB'];
 
 // This now points to your local public folder!
 const UP_TOPOJSON_URL = "/uttar-pradesh.json";
+
 
 function useTerritories(numReps, strategy) {
   const [data, setData] = useState({ hcps: [], metrics: null });
@@ -17,17 +19,20 @@ function useTerritories(numReps, strategy) {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`http://localhost:8000/api/optimize-territories`, {
-          params: { num_reps: numReps, strategy: strategy }
-        });
-        
+        const response = await getOptimizedTerritories(numReps, strategy);
+
         if (response.data.error) {
           setError(response.data.error);
         } else {
-          setData({ hcps: response.data.data || [], metrics: response.data.metrics || null });
+          setData({
+            hcps: response.data.data || [],
+            metrics: response.data.metrics || null,
+          });
         }
       } catch (err) {
-        setError("Could not connect to the FastAPI server. Ensure it is running on port 8000.");
+        setError(
+          "Could not connect to the FastAPI server. Ensure it is running on port 8000."
+        );
       } finally {
         setLoading(false);
       }
@@ -38,6 +43,7 @@ function useTerritories(numReps, strategy) {
 
   return { ...data, loading, error };
 }
+
 
 // ==========================================
 // 2. SUB-COMPONENTS: UI Separation
